@@ -1,12 +1,3 @@
-/**
- * Runtime smoke test.
- *
- * The sandbox on this machine cannot launch Chrome or Edge (both crash on
- * launch), so scripts/shoot.mjs and scripts/audit.js cannot run here. This
- * test mounts the built bundle in jsdom instead — it cannot judge layout or
- * composition, but it does prove the app renders, the content is present,
- * the interaction wiring is intact, and nothing throws at runtime.
- */
 import { JSDOM, VirtualConsole } from 'jsdom'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -14,8 +5,8 @@ import { resolve } from 'node:path'
 const errors = []
 const passed = []
 const vc = new VirtualConsole()
-vc.on('jsdomError', (e) => errors.push(`jsdomError: ${e.message}`))
-vc.on('error', (...a) => errors.push(`console.error: ${a.join(' ')}`))
+vc.on('jsdomError', (error) => errors.push(`jsdomError: ${error.message}`))
+vc.on('error', (...args) => errors.push(`console.error: ${args.join(' ')}`))
 
 const html = readFileSync('dist/index.html', 'utf8')
 const dom = new JSDOM(html, {
@@ -25,55 +16,46 @@ const dom = new JSDOM(html, {
   pretendToBeVisual: true,
   virtualConsole: vc,
 })
-
 const { window } = dom
 const check = (name, fn) => {
   try {
-    const r = fn()
-    if (r === false) errors.push(`FAIL ${name}`)
+    if (fn() === false) errors.push(`FAIL ${name}`)
     else passed.push(name)
-  } catch (e) {
-    errors.push(`THREW ${name}: ${e.message}`)
+  } catch (error) {
+    errors.push(`THREW ${name}: ${error.message}`)
   }
 }
 
-await new Promise((r) => {
-  if (window.document.readyState === 'complete') r()
-  else window.addEventListener('load', r, { once: true })
+await new Promise((resolveLoad) => {
+  if (window.document.readyState === 'complete') resolveLoad()
+  else window.addEventListener('load', resolveLoad, { once: true })
 })
-// let the deferred bundle execute + React commit
-await new Promise((r) => setTimeout(r, 400))
+await new Promise((resolveRender) => setTimeout(resolveRender, 400))
 
 const doc = window.document
 const text = doc.body.textContent || ''
-
-check('bundle executed (no runtime error)', () => errors.length === 0)
-check('<h1> renders the name', () => doc.querySelector('h1')?.textContent.includes('戴玮轩'))
-check('context window panel exists', () => !!doc.querySelector('.window'))
-check('transcript has 4 lines', () => doc.querySelectorAll('.line').length === 4)
-check('all 5 project cards render', () => doc.querySelectorAll('.card').length === 5)
-check('cache demo rows render', () => doc.querySelectorAll('.ctx__row').length === 9)
-check('cache stats render', () => doc.querySelectorAll('.stat').length === 2)
-check('replay button is reachable', () => !!doc.querySelector('.cache__replay'))
-check('all 3 jobs + education render', () => doc.querySelectorAll('.job').length === 4)
-check('skill groups render', () => doc.querySelectorAll('.skill__group').length === 4)
+check('bundle executed without runtime errors', () => errors.length === 0)
+check('React root rendered', () => !!doc.querySelector('#root'))
+check('legacy hero rendered', () => doc.querySelector('h1')?.getAttribute('aria-label')?.includes('大模型'))
+check('all four project cards rendered', () => doc.querySelectorAll('.cards .card').length === 4)
+check('cache demo rows rendered', () => doc.querySelectorAll('.demo .turn').length === 4)
+check('cache controls rendered', () => doc.querySelectorAll('.seg-ctl button').length === 2)
+check('all four experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 4)
+check('all four skill groups rendered', () => doc.querySelectorAll('.skills .sk').length === 4)
 check('external links are present', () => doc.querySelectorAll('a[href^="http"]').length >= 3)
-check('mailto link present', () => !!doc.querySelector('a[href^="mailto:"]'))
-check('measured numbers appear', () => text.includes('58') && text.includes('74') && text.includes('20'))
+check('mailto link is present', () => !!doc.querySelector('a[href^="mailto:"]'))
+check('legacy sections are present', () => ['work', 'experience', 'skills', 'contact'].every((id) => doc.querySelector(`#${id}`)))
 check('no template placeholder leaked', () => !/undefined|NaN|\[object/.test(text))
 check('page is not empty', () => text.trim().length > 1200)
-
-// simulate the replay interaction (React state update + re-render)
-check('replay click does not throw', () => {
-  doc.querySelector('.cache__replay')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }))
+check('cache mode switch does not throw', () => {
+  doc.querySelector('[data-mode="after"]')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }))
   return true
 })
-await new Promise((r) => setTimeout(r, 200))
-check('still healthy after interaction', () => errors.length === 0 && !!doc.querySelector('.card'))
+await new Promise((resolveRender) => setTimeout(resolveRender, 100))
+check('still healthy after interaction', () => errors.length === 0 && doc.querySelector('.demo .v')?.textContent.includes('50'))
 
 console.log(`RUNTIME SMOKE TEST — ${errors.length} problems, ${passed.length} checks passed\n`)
-for (const p of passed) console.log(`  ✓ ${p}`)
-for (const e of errors) console.log(`  ✗ ${e}`)
-
+for (const item of passed) console.log(`  ✓ ${item}`)
+for (const error of errors) console.log(`  ✗ ${error}`)
 window.close()
 process.exitCode = errors.length ? 1 : 0

@@ -14,9 +14,10 @@ const bundle = await rollup({ input: config.input, plugins: config.plugins })
 await bundle.write(config.output)
 await bundle.close()
 
-// index.html and styles.css are shipped as-is — no CSS-in-JS pipeline needed.
-for (const file of ['index.html', 'styles.css', 'favicon.svg']) {
+// index.html, CSS, fonts and favicon are shipped as static assets.
+for (const file of ['index.html', 'styles.css', 'fonts.css', 'favicon.svg']) {
   if (existsSync(file)) cpSync(file, join('dist', file))
 }
+if (existsSync('fonts')) cpSync('fonts', join('dist', 'fonts'), { recursive: true })
 
-console.log('\n✓ built dist/  (app.js + index.html + styles.css)')
+console.log('\n✓ built dist/  (app.js + index.html + styles.css + fonts)')
