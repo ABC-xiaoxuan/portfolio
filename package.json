@@ -1,0 +1,29 @@
+{
+  "name": "daweixuan-portfolio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "戴玮轩 · 个人网站（设计概念：上下文窗口）",
+  "scripts": {
+    "build": "node build.mjs",
+    "audit": "node audit-static.mjs",
+    "smoke": "node smoke.mjs",
+    "check": "node build.mjs && node audit-static.mjs && node smoke.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/preset-react": "^7.26.3",
+    "@rollup/plugin-babel": "^7.1.0",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-replace": "^6.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
+    "jsdom": "^30.1.2",
+    "rollup": "^4.64.5",
+    "terser": "^5.51.2"
+  }
+}
