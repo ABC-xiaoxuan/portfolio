@@ -95,7 +95,7 @@ button { font: inherit; color: inherit; }
 .headline:hover .t.settled { background: var(--tok); }
 .headline:hover .t.hit.settled { background: var(--accent-soft); }
 
-.hero-meta { display: grid; grid-template-columns: minmax(220px, 3fr) 9fr; gap: 24px clamp(24px, 5vw, 72px); margin-top: clamp(40px, 6vh, 64px); padding-top: 28px; border-top: 1px solid var(--line); }
+.hero-meta { display: grid; grid-template-columns: minmax(180px, 2fr) minmax(260px, 5fr) minmax(280px, 4fr); gap: 24px clamp(24px, 4vw, 56px); margin-top: clamp(40px, 6vh, 64px); padding-top: 28px; border-top: 1px solid var(--line); }
 .meter { display: grid; gap: 8px; align-content: start; font: 500 var(--fs-xs)/1.4 var(--mono); color: var(--ink-3); }
 .meter-row { display: flex; justify-content: space-between; gap: 16px; }
 .meter-v { color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -228,10 +228,14 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 @media (max-width: 1024px) {
   .feature { grid-template-columns: 1fr; }
   .numbers { grid-template-columns: repeat(2, 1fr); }
+  .hero-meta { grid-template-columns: minmax(180px, 2fr) 5fr; }
+  .cad-visual { grid-column: 1 / -1; grid-row: auto; min-height: 300px; }
 }
 @media (max-width: 760px) {
   .hero-meta { grid-template-columns: 1fr; }
   .meter { order: 2; max-width: 320px; }
+  .cad-visual { grid-column: 1; grid-row: auto; order: 0; min-height: 270px; }
+  .intro { order: 1; }
   .cards, .skills { grid-template-columns: 1fr; }
   .timeline li { grid-template-columns: 1fr; gap: 4px; }
   .t-when { font-size: var(--fs-xs); }
@@ -251,3 +255,49 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
   .reveal, .t, .c { opacity: 1; transform: none; }
 }
+
+/* ---------- 3D CAD / context scene ---------- */
+.cad-visual {
+  position: relative;
+  min-height: clamp(250px, 25vw, 360px);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: radial-gradient(circle at 50% 48%, var(--surface) 0 22%, var(--surface-2) 82%);
+  isolation: isolate;
+  cursor: crosshair;
+}
+.cad-visual::before,
+.cad-visual::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--line-2) 55%, transparent);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.cad-visual::before { width: 72%; aspect-ratio: 1; left: 14%; top: 14%; transform: rotate(22deg) scaleY(.42); }
+.cad-visual::after { width: 52%; aspect-ratio: 1; left: 24%; top: 24%; transform: rotate(-18deg) scaleY(.42); }
+.cad-visual canvas { display: block; width: 100%; height: 100%; min-height: inherit; }
+.cad-visual-head,
+.cad-visual-foot {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  pointer-events: none;
+  font: 500 var(--fs-xs)/1.4 var(--mono);
+  color: var(--ink-3);
+  letter-spacing: .02em;
+}
+.cad-visual-head { top: 14px; }
+.cad-visual-foot { bottom: 14px; justify-content: flex-start; gap: 16px; }
+.cad-visual-foot span { display: inline-flex; align-items: center; gap: 6px; }
+.cad-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
+.cad-dot-hit { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.cad-dot-new { background: var(--ink); }
+.cad-visual-axis { position: absolute; font: 500 10px/1 var(--mono); color: var(--ink-3); opacity: .72; pointer-events: none; }
+.cad-axis-x { right: 18%; bottom: 30%; }
+.cad-axis-y { left: 18%; top: 32%; }

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
+import CadScene from './components/CadScene.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -126,6 +127,7 @@ function Hero() {
       </span>
     </h1>
     <div className="hero-meta">
+      <CadScene />
       <div className="meter" aria-hidden="true">
         <span className="meter-row"><span className="meter-k">tokens</span><span className="meter-v">{shown}</span></span>
         <span className="meter-row"><span className="meter-k">elapsed</span><span className="meter-v hit">{elapsed}</span></span>

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "戴玮轩 · 个人网站（设计概念：上下文窗口）",
+  "description": "戴玮轩 · AI 全栈工程师个人简历网站（Token / CAD / Context）",
   "scripts": {
     "build": "node build.mjs",
     "audit": "node audit-static.mjs",
@@ -14,7 +14,8 @@
     "@gsap/react": "^2.1.2",
     "gsap": "^3.15.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.9",
