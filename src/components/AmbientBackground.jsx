@@ -2,12 +2,15 @@ import { useEffect, useRef } from 'react'
 import {
   BufferGeometry,
   Clock,
+  EdgesGeometry,
   Float32BufferAttribute,
+  Group,
+  IcosahedronGeometry,
   LineBasicMaterial,
   LineSegments,
   Mesh,
   MeshBasicMaterial,
-  OrthographicCamera,
+  PerspectiveCamera,
   PlaneGeometry,
   Points,
   PointsMaterial,
@@ -53,8 +56,35 @@ export default function AmbientBackground() {
     renderer.outputColorSpace = SRGBColorSpace
 
     const scene = new Scene()
-    const camera = new OrthographicCamera(-4, 4, 3, -3, 0.1, 20)
-    camera.position.z = 8
+    const camera = new PerspectiveCamera(32, 1, 0.1, 30)
+    camera.position.set(0, 0, 8)
+
+    const crystal = new Group()
+    crystal.position.set(2.35, 0.85, -1.3)
+    crystal.rotation.set(0.25, -0.35, 0.1)
+    const crystalGeometry = new IcosahedronGeometry(1.55, 1)
+    const crystalEdges = new LineSegments(
+      new EdgesGeometry(crystalGeometry, 12),
+      new LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.11 }),
+    )
+    const crystalInnerGeometry = new IcosahedronGeometry(1.22, 1)
+    const crystalInner = new LineSegments(
+      new WireframeGeometry(crystalInnerGeometry),
+      new LineBasicMaterial({ color: INK, transparent: true, opacity: 0.045 }),
+    )
+    crystal.add(crystalEdges, crystalInner)
+    scene.add(crystal)
+
+    const ghost = new Group()
+    ghost.position.set(-2.7, -1.35, -2.1)
+    ghost.rotation.set(-0.35, 0.4, -0.12)
+    const ghostGeometry = new IcosahedronGeometry(1.18, 1)
+    const ghostEdges = new LineSegments(
+      new EdgesGeometry(ghostGeometry, 12),
+      new LineBasicMaterial({ color: INK, transparent: true, opacity: 0.075 }),
+    )
+    ghost.add(ghostEdges)
+    scene.add(ghost)
 
     const world = new Mesh(
       new PlaneGeometry(11, 8, 18, 14),
@@ -106,12 +136,7 @@ export default function AmbientBackground() {
     const resize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
-      const aspect = width / Math.max(height, 1)
-      const span = Math.max(4.5, aspect * 3.2)
-      camera.left = -span
-      camera.right = span
-      camera.top = 3.2
-      camera.bottom = -3.2
+      camera.aspect = width / Math.max(height, 1)
       camera.updateProjectionMatrix()
       renderer.setSize(width, height, false)
     }
@@ -128,6 +153,18 @@ export default function AmbientBackground() {
         points.rotation.z = time * 0.018
         hitPoints.rotation.z = -time * 0.035
         hitPoints.position.y = 0.6 + Math.sin(time * 0.65) * 0.12
+        crystal.rotation.x = 0.25 + time * 0.035 + target.y * 0.08
+        crystal.rotation.y = -0.35 + time * 0.055 + target.x * 0.12
+        crystal.rotation.z = 0.1 + Math.sin(time * 0.18) * 0.04
+        crystal.position.x = 2.35 + target.x * 0.18
+        crystal.position.y = 0.85 - target.y * 0.14 + Math.sin(time * 0.22) * 0.08
+        ghost.rotation.x = -0.35 - time * 0.025
+        ghost.rotation.y = 0.4 - time * 0.04
+        ghost.position.x = -2.7 + target.x * 0.12
+        ghost.position.y = -1.35 - target.y * 0.1
+        camera.position.x += (target.x * 0.12 - camera.position.x) * 0.018
+        camera.position.y += (-target.y * 0.08 - camera.position.y) * 0.018
+        camera.lookAt(0, 0, -1)
       }
       renderer.render(scene, camera)
       if (!reduce) frame = requestAnimationFrame(render)
@@ -164,6 +201,15 @@ export default function AmbientBackground() {
       points.material.dispose()
       hitPoints.geometry.dispose()
       hitPoints.material.dispose()
+      crystalGeometry.dispose()
+      crystalEdges.geometry.dispose()
+      crystalEdges.material.dispose()
+      crystalInnerGeometry.dispose()
+      crystalInner.geometry.dispose()
+      crystalInner.material.dispose()
+      ghostGeometry.dispose()
+      ghostEdges.geometry.dispose()
+      ghostEdges.material.dispose()
       world.geometry.dispose()
       world.material.dispose()
       renderer.dispose()
