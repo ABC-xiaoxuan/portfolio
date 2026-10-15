@@ -14,6 +14,9 @@ const dom = new JSDOM(html, {
   runScripts: 'dangerously',
   resources: 'usable',
   pretendToBeVisual: true,
+  beforeParse: (window) => {
+    window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} }))
+  },
   virtualConsole: vc,
 })
 const { window } = dom

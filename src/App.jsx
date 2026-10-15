@@ -1,4 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const TOKENS = [['把'], ['大模型'], ['能力'], ['，'], null, ['落进'], ['真实', 1], ['业务', 1], ['里'], ['。']]
 const SIZES = [16, 22, 28, 34]
@@ -52,64 +57,70 @@ function useReducedMotion() {
 
 function Reveal({ children, className = '', as: Element = 'div' }) {
   const ref = useRef(null)
-  useEffect(() => {
+  const reduce = useReducedMotion()
+  useGSAP(() => {
     const node = ref.current
-    if (!node || !('IntersectionObserver' in window)) {
-      node?.classList.add('in')
-      return undefined
+    if (!node) return
+    if (reduce) {
+      gsap.set(node, { clearProps: 'all' })
+      return
     }
-    node.classList.add('reveal')
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        node.classList.add('in')
-        observer.disconnect()
-      }
-    }, { rootMargin: '0px 0px -8% 0px' })
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [])
+    gsap.fromTo(node, { autoAlpha: 0, y: 16 }, {
+      autoAlpha: 1,
+      y: 0,
+      duration: 0.7,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: node, start: 'top 92%', once: true },
+    })
+  }, { scope: ref, dependencies: [reduce] })
   return <Element ref={ref} className={className}>{children}</Element>
 }
 
 function Hero() {
   const reduce = useReducedMotion()
-  const [shown, setShown] = useState(reduce ? TOKENS.filter(Boolean).length : 0)
-  const [settled, setSettled] = useState(reduce)
-  const [elapsed, setElapsed] = useState(reduce ? '—' : '0 ms')
+  const scope = useRef(null)
+  const [shown, setShown] = useState(0)
+  const [elapsed, setElapsed] = useState('0 ms')
   const total = TOKENS.filter(Boolean).length
 
-  useEffect(() => {
+  useGSAP(() => {
+    const nodes = [...scope.current.querySelectorAll('.t')].filter((node) => !node.classList.contains('br'))
     if (reduce) {
+      nodes.forEach((node) => node.classList.add('on', 'settled'))
+      gsap.set(nodes, { opacity: 1, y: 0 })
       setShown(total)
-      setSettled(true)
       setElapsed('—')
-      return undefined
+      return
     }
-    let count = 0
-    const start = performance.now()
-    const timers = TOKENS.map((token, index) => {
-      if (!token) return undefined
-      const timer = window.setTimeout(() => {
-        count += 1
-        setShown(count)
-        setElapsed(`${Math.round(performance.now() - start)} ms`)
-        if (count === total) window.setTimeout(() => setSettled(true), 900)
-      }, 350 + index * 120)
-      return timer
+    const started = performance.now()
+    const timeline = gsap.timeline()
+    nodes.forEach((node, index) => {
+      timeline.to(node, {
+        opacity: 1,
+        y: 0,
+        duration: 0.35,
+        ease: 'power3.out',
+        onStart: () => {
+          node.classList.add('on')
+          setShown(index + 1)
+          setElapsed(`${Math.round(performance.now() - started)} ms`)
+        },
+        onComplete: () => {
+          if (index === nodes.length - 1) nodes.forEach((item) => item.classList.add('settled'))
+        },
+      }, 0.35 + index * 0.12)
     })
-    return () => timers.forEach((timer) => timer && clearTimeout(timer))
-  }, [reduce, total])
+  }, { scope, dependencies: [reduce, total] })
 
   let tokenIndex = 0
-  return <section className="hero wrap">
+  return <section ref={scope} className="hero wrap">
     <p className="status"><span className="pulse" aria-hidden="true" />开放机会 · 深圳 / 可异地</p>
     <h1 className="headline" aria-label="把大模型能力，落进真实业务里。">
       <span className="toks" aria-hidden="true">
         {TOKENS.map((token, index) => {
           if (!token) return <span className="t br" key={index} />
-          const current = tokenIndex++
-          const className = `t${token[1] ? ' hit' : ''}${current < shown ? ' on' : ''}${settled ? ' settled' : ''}`
-          const content = <span className={className} key={index}>{token[0]}</span>
+          tokenIndex += 1
+          const content = <span className={`t${token[1] ? ' hit' : ''}`} key={index}>{token[0]}</span>
           return index >= TOKENS.length - 2 ? <span className="nw" key={`nw-${index}`}>{content}{index === TOKENS.length - 1 && <span className="caret" />}</span> : content
         })}
       </span>
@@ -137,25 +148,21 @@ function CountUp({ to }) {
   const reduce = useReducedMotion()
   const ref = useRef(null)
   const [value, setValue] = useState(to)
-  useEffect(() => {
-    if (reduce) return undefined
-    const node = ref.current
-    if (!node || !('IntersectionObserver' in window)) return undefined
-    let frame
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      observer.disconnect()
-      const start = performance.now()
-      const tick = (now) => {
-        const progress = Math.min((now - start) / 1100, 1)
-        setValue(Math.round(to * (1 - Math.pow(1 - progress, 3))))
-        if (progress < 1) frame = requestAnimationFrame(tick)
-      }
-      frame = requestAnimationFrame(tick)
-    }, { threshold: 0.6 })
-    observer.observe(node)
-    return () => { observer.disconnect(); if (frame) cancelAnimationFrame(frame) }
-  }, [reduce, to])
+  useGSAP(() => {
+    if (reduce) {
+      setValue(to)
+      return
+    }
+    const state = { value: 0 }
+    gsap.to(state, {
+      value: to,
+      duration: 1.1,
+      ease: 'power3.out',
+      snap: { value: 1 },
+      scrollTrigger: { trigger: ref.current, start: 'top 78%', once: true },
+      onUpdate: () => setValue(state.value),
+    })
+  }, { scope: ref, dependencies: [reduce, to] })
   return <span ref={ref}>{value}</span>
 }
 
@@ -173,33 +180,32 @@ function CacheDemo() {
   const demoRef = useRef(null)
   const touched = useRef(false)
   const [mode, setMode] = useState('before')
-  const [revealed, setRevealed] = useState(reduce ? 100 : 0)
   const stat = STATS[mode]
   const rows = useMemo(() => SIZES.flatMap((size, row) => {
     const hit = row === 0 ? 0 : Math.round(size * stat.hit)
     return Array.from({ length: size }, (_, index) => ({ row, index, type: index < hit ? 'hit' : row === 0 ? 'new' : stat.rest }))
   }), [stat])
 
-  useEffect(() => {
-    setRevealed(reduce ? rows.length : 0)
-    if (reduce) return undefined
-    const timer = window.setInterval(() => setRevealed((value) => Math.min(value + 1, rows.length)), 9)
-    return () => clearInterval(timer)
-  }, [mode, reduce, rows.length])
-
-  useEffect(() => {
-    if (reduce || !demoRef.current || !('IntersectionObserver' in window)) return undefined
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        observer.disconnect()
-        const timer = window.setTimeout(() => { if (!touched.current) setMode('after') }, 2600)
-        return () => clearTimeout(timer)
-      }
-      return undefined
-    }, { threshold: 0.45 })
-    observer.observe(demoRef.current)
-    return () => observer.disconnect()
-  }, [reduce])
+  useGSAP(() => {
+    const chips = demoRef.current?.querySelectorAll('.c')
+    if (!chips) return
+    if (reduce) {
+      chips.forEach((chip) => chip.classList.add('on'))
+      gsap.set(chips, { opacity: 1, scale: 1 })
+      return
+    }
+    gsap.fromTo(chips, { opacity: 0, scale: 0.4 }, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.35,
+      ease: 'power3.out',
+      stagger: 0.009,
+      onStart: () => chips.forEach((chip) => chip.classList.add('on')),
+    })
+    if (mode === 'before' && !touched.current) {
+      gsap.delayedCall(2.6, () => { if (!touched.current) setMode('after') })
+    }
+  }, { scope: demoRef, dependencies: [mode, reduce, rows.length] })
 
   return <div className="demo" id="demo" ref={demoRef}>
     <div className="demo-head">
@@ -209,7 +215,7 @@ function CacheDemo() {
       </div>
     </div>
     <div className="demo-body" aria-live="polite">
-      {SIZES.map((size, row) => <div className="turn" key={row}><span className="turn-k">T{row + 1}</span><span className="chips">{rows.filter((chip) => chip.row === row).map((chip, index) => <i className={`c ${chip.type}${index + rows.slice(0, row).filter((item) => item.row === row - 1).length < revealed ? ' on' : ''}`} style={{ width: `${8 + (row * 13 + index * 7) % 15}px` }} key={index} />)}</span></div>)}
+      {SIZES.map((size, row) => <div className="turn" key={row}><span className="turn-k">T{row + 1}</span><span className="chips">{rows.filter((chip) => chip.row === row).map((chip, index) => <i className={`c ${chip.type}`} style={{ width: `${8 + (row * 13 + index * 7) % 15}px` }} key={index} />)}</span></div>)}
     </div>
     <div className="demo-foot">
       <div className="demo-stat"><span className="k">缓存命中率</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rate}</span></div>
