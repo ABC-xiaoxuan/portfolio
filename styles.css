@@ -95,7 +95,10 @@ button { font: inherit; color: inherit; }
 .headline:hover .t.settled { background: var(--tok); }
 .headline:hover .t.hit.settled { background: var(--accent-soft); }
 
-.hero-meta { display: grid; grid-template-columns: minmax(180px, 2fr) minmax(260px, 5fr) minmax(280px, 4fr); gap: 24px clamp(24px, 4vw, 56px); margin-top: clamp(40px, 6vh, 64px); padding-top: 28px; border-top: 1px solid var(--line); }
+.hero-meta { display: grid; grid-template-columns: minmax(300px, 1fr) minmax(360px, 1.15fr); gap: 20px clamp(28px, 4vw, 64px); margin-top: clamp(40px, 6vh, 64px); padding-top: 28px; border-top: 1px solid var(--line); }
+.meter { grid-column: 1; grid-row: 1; }
+.intro { grid-column: 1; grid-row: 2; }
+.cad-visual { grid-column: 2; grid-row: 1 / span 2; }
 .meter { display: grid; gap: 8px; align-content: start; font: 500 var(--fs-xs)/1.4 var(--mono); color: var(--ink-3); }
 .meter-row { display: flex; justify-content: space-between; gap: 16px; }
 .meter-v { color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -228,14 +231,16 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 @media (max-width: 1024px) {
   .feature { grid-template-columns: 1fr; }
   .numbers { grid-template-columns: repeat(2, 1fr); }
-  .hero-meta { grid-template-columns: minmax(180px, 2fr) 5fr; }
-  .cad-visual { grid-column: 1 / -1; grid-row: auto; min-height: 300px; }
+  .hero-meta { grid-template-columns: 1fr 1fr; }
+  .cad-visual { grid-column: 1 / -1; grid-row: 1; min-height: 300px; }
+  .meter { grid-column: 1; grid-row: 2; }
+  .intro { grid-column: 2; grid-row: 2; }
 }
 @media (max-width: 760px) {
   .hero-meta { grid-template-columns: 1fr; }
-  .meter { order: 2; max-width: 320px; }
-  .cad-visual { grid-column: 1; grid-row: auto; order: 0; min-height: 270px; }
-  .intro { order: 1; }
+  .meter { grid-column: 1; grid-row: 3; order: 2; max-width: 320px; }
+  .cad-visual { grid-column: 1; grid-row: 1; order: 0; min-height: 270px; }
+  .intro { grid-column: 1; grid-row: 2; order: 1; }
   .cards, .skills { grid-template-columns: 1fr; }
   .timeline li { grid-template-columns: 1fr; gap: 4px; }
   .t-when { font-size: var(--fs-xs); }
@@ -265,7 +270,7 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
   border-radius: var(--r-lg);
   background: radial-gradient(circle at 50% 48%, var(--surface) 0 22%, var(--surface-2) 82%);
   isolation: isolate;
-  cursor: crosshair;
+  cursor: grab;
 }
 .cad-visual::before,
 .cad-visual::after {

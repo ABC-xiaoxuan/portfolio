@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import {
   BoxGeometry,
   Clock,
+  EdgesGeometry,
   Group,
   LineBasicMaterial,
   LineSegments,
@@ -14,7 +15,6 @@ import {
   TorusGeometry,
   TorusKnotGeometry,
   WebGLRenderer,
-  WireframeGeometry,
 } from 'three'
 
 const ACCENT = 0xcf4410
@@ -48,17 +48,17 @@ export default function CadScene() {
     const model = new Group()
     scene.add(model)
 
-    const knotGeometry = new TorusKnotGeometry(1.05, 0.22, 180, 28, 2, 3)
+    const knotGeometry = new TorusKnotGeometry(1.05, 0.22, 96, 14, 2, 3)
     const knot = new LineSegments(
-      new WireframeGeometry(knotGeometry),
-      new LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.72 }),
+      new EdgesGeometry(knotGeometry, 16),
+      new LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.58 }),
     )
     model.add(knot)
 
-    const innerGeometry = new TorusKnotGeometry(0.78, 0.012, 120, 12, 2, 3)
+    const innerGeometry = new TorusKnotGeometry(0.78, 0.012, 72, 8, 2, 3)
     const inner = new Mesh(
       innerGeometry,
-      new MeshBasicMaterial({ color: INK, wireframe: true, transparent: true, opacity: 0.28 }),
+      new MeshBasicMaterial({ color: INK, wireframe: true, transparent: true, opacity: 0.16 }),
     )
     model.add(inner)
 
