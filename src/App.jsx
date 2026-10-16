@@ -138,7 +138,7 @@ function Hero() {
         <p className="who"><strong>戴玮轩</strong><span>AI 全栈工程师</span></p>
         <p className="lede">两年全栈经验。参与研发企业级 CAD AI Agent，负责模型缓存优化，把命中率从 20% 提到 50–60%。日常用 Claude Code / Codex 做项目级开发，一个人交付过 Web、App 和后台三端。</p>
         <div className="actions">
-          <a className="btn btn-primary" href="mailto:17625708403@163.com">写邮件给我</a>
+          <a className="btn btn-primary" href="mailto:dongwangxing@foxmail.com">写邮件给我</a>
           <a className="btn" href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
           <a className="btn" href="https://www.getnurbs.com" target="_blank" rel="noopener">getnurbs.com <span aria-hidden="true">↗</span></a>
         </div>
@@ -270,7 +270,7 @@ function Skills() {
 }
 
 function Contact() {
-  return <section id="contact" className="contact wrap"><Reveal className="contact-card"><p className="status"><span className="pulse" aria-hidden="true" />正在找 AI 全栈 / 全栈开发岗位</p><h2>聊聊怎么把模型<br />用进你的业务。</h2><a className="contact-mail" href="mailto:17625708403@163.com">17625708403@163.com <span aria-hidden="true">→</span></a><ul className="contact-list"><li><span>GitHub</span><a href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">ABC-xiaoxuan ↗</a></li><li><span>作品</span><a href="https://www.getnurbs.com" target="_blank" rel="noopener">getnurbs.com ↗</a></li><li><span>所在</span><span>深圳 · 可接受异地</span></li></ul></Reveal></section>
+  return <section id="contact" className="contact wrap"><Reveal className="contact-card"><p className="status"><span className="pulse" aria-hidden="true" />正在找 AI 全栈 / 全栈开发岗位</p><h2>聊聊怎么把模型<br />用进你的业务。</h2><a className="contact-mail" href="mailto:dongwangxing@foxmail.com">dongwangxing@foxmail.com <span aria-hidden="true">→</span></a><ul className="contact-list"><li><span>GitHub</span><a href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">ABC-xiaoxuan ↗</a></li><li><span>作品</span><a href="https://www.getnurbs.com" target="_blank" rel="noopener">getnurbs.com ↗</a></li><li><span>所在</span><span>深圳 · 可接受异地</span></li></ul></Reveal></section>
 }
 
 export default function App() {
