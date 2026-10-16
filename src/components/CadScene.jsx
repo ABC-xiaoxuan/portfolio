@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import {
   BoxGeometry,
-  Clock,
   EdgesGeometry,
   Group,
   LineBasicMaterial,
@@ -14,6 +13,7 @@ import {
   SRGBColorSpace,
   TorusGeometry,
   TorusKnotGeometry,
+  Timer,
   WebGLRenderer,
 } from 'three'
 
@@ -51,7 +51,7 @@ export default function CadScene() {
     const knotGeometry = new TorusKnotGeometry(1.05, 0.22, 96, 14, 2, 3)
     const knot = new LineSegments(
       new EdgesGeometry(knotGeometry, 16),
-      new LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.58 }),
+      new LineBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.4 }),
     )
     model.add(knot)
 
@@ -93,8 +93,10 @@ export default function CadScene() {
 
     const pointer = { x: 0, y: 0 }
     const targetPointer = { x: 0, y: 0 }
-    const clock = new Clock()
-    let frame
+    const timer = new Timer()
+    timer.connect(document)
+    let frame = 0
+    let visible = true
 
     const resize = () => {
       const width = Math.max(host.clientWidth, 280)
@@ -104,8 +106,9 @@ export default function CadScene() {
       camera.updateProjectionMatrix()
     }
 
-    const render = () => {
-      const time = clock.getElapsedTime()
+    const render = (timestamp) => {
+      frame = 0
+      const time = timer.update(timestamp).getElapsed()
       if (!reduce) {
         targetPointer.x += (pointer.x - targetPointer.x) * 0.05
         targetPointer.y += (pointer.y - targetPointer.y) * 0.05
@@ -132,8 +135,21 @@ export default function CadScene() {
       }
       camera.lookAt(0, 0, 0)
       renderer.render(scene, camera)
-      if (!reduce) frame = requestAnimationFrame(render)
+      if (!reduce && visible) frame = requestAnimationFrame(render)
     }
+
+    // Stop the loop while the hero is scrolled out of view; reset the timer on
+    // resume so the scene picks up where it left off instead of jumping ahead.
+    const visibility = typeof IntersectionObserver === 'undefined' ? null : new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      if (!visible && frame) {
+        cancelAnimationFrame(frame)
+        frame = 0
+      } else if (visible && !frame && !reduce) {
+        timer.reset()
+        frame = requestAnimationFrame(render)
+      }
+    })
 
     const onPointerMove = (event) => {
       const rect = host.getBoundingClientRect()
@@ -146,12 +162,15 @@ export default function CadScene() {
     render()
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resize)
     observer?.observe(host)
+    visibility?.observe(host)
     host.addEventListener('pointermove', onPointerMove)
     host.addEventListener('pointerleave', onPointerLeave)
 
     return () => {
       if (frame) cancelAnimationFrame(frame)
       observer?.disconnect()
+      visibility?.disconnect()
+      timer.dispose()
       host.removeEventListener('pointermove', onPointerMove)
       host.removeEventListener('pointerleave', onPointerLeave)
       knotGeometry.dispose()

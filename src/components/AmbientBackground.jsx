@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import {
   BufferGeometry,
-  Clock,
   EdgesGeometry,
   Float32BufferAttribute,
   Group,
@@ -16,6 +15,7 @@ import {
   PointsMaterial,
   Scene,
   SRGBColorSpace,
+  Timer,
   TorusGeometry,
   WebGLRenderer,
   WireframeGeometry,
@@ -86,13 +86,6 @@ export default function AmbientBackground() {
     ghost.add(ghostEdges)
     scene.add(ghost)
 
-    const world = new Mesh(
-      new PlaneGeometry(11, 8, 18, 14),
-      new MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 }),
-    )
-    world.visible = false
-    scene.add(world)
-
     const gridGeometry = new PlaneGeometry(11, 8, 18, 14)
     const grid = new LineSegments(
       new WireframeGeometry(gridGeometry),
@@ -130,7 +123,8 @@ export default function AmbientBackground() {
 
     const pointer = { x: 0, y: 0 }
     const target = { x: 0, y: 0 }
-    const clock = new Clock()
+    const timer = new Timer()
+    timer.connect(document)
     let frame
 
     const resize = () => {
@@ -141,8 +135,8 @@ export default function AmbientBackground() {
       renderer.setSize(width, height, false)
     }
 
-    const render = () => {
-      const time = clock.getElapsedTime()
+    const render = (timestamp) => {
+      const time = timer.update(timestamp).getElapsed()
       if (!reduce) {
         target.x += (pointer.x - target.x) * 0.025
         target.y += (pointer.y - target.y) * 0.025
@@ -190,6 +184,7 @@ export default function AmbientBackground() {
       window.removeEventListener('resize', resize)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('scroll', onScroll)
+      timer.dispose()
       gridGeometry.dispose()
       grid.geometry.dispose()
       grid.material.dispose()
@@ -210,8 +205,6 @@ export default function AmbientBackground() {
       ghostGeometry.dispose()
       ghostEdges.geometry.dispose()
       ghostEdges.material.dispose()
-      world.geometry.dispose()
-      world.material.dispose()
       renderer.dispose()
     }
   }, [])

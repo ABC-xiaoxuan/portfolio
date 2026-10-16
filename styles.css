@@ -299,7 +299,17 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 }
 .cad-visual-head { top: 14px; }
 .cad-visual-foot { bottom: 14px; justify-content: flex-start; gap: 16px; }
-.cad-visual-foot span { display: inline-flex; align-items: center; gap: 6px; }
+.cad-visual-head span,
+.cad-visual-foot span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
 .cad-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
 .cad-dot-hit { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
 .cad-dot-new { background: var(--ink); }
