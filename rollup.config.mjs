@@ -8,17 +8,27 @@ import terser from '@rollup/plugin-terser'
  * Toolchain note
  * --------------
  * The build is Rollup + Babel only — no esbuild, no child processes.
- * Output is a classic IIFE script, so dist/index.html can even be opened
- * straight from disk. `runtime: 'automatic'` means no `import React`
- * boilerplate in every component.
+ * Production output is ES modules with code splitting: the page shell ships
+ * in app.js, while three.js (hero NURBS surface) is a dynamic import that loads
+ * only when the browser has WebGL.
+ * `runtime: 'automatic'` means no `import React` boilerplate in every component.
  */
 export default {
   input: 'src/main.jsx',
   output: {
     dir: 'dist',
-    format: 'iife',
+    format: 'es',
     entryFileNames: 'app.js',
+    chunkFileNames: 'chunks/[name]-[hash].js',
     assetFileNames: '[name][extname]',
+    generatedCode: 'es2015',
+  },
+  // jsdom cannot run module scripts, so the smoke test gets a single classic
+  // script with every dynamic import inlined.
+  smokeOutput: {
+    file: '.smoke/app.js',
+    format: 'iife',
+    inlineDynamicImports: true,
     generatedCode: 'es2015',
   },
   plugins: [
@@ -31,6 +41,9 @@ export default {
     babel({
       babelHelpers: 'bundled',
       extensions: ['.js', '.jsx'],
+      // Dependencies ship compiled JS; transforming three.js through Babel
+      // only slowed the build down.
+      exclude: /node_modules/,
       babelrc: false,
       configFile: false,
       presets: [['@babel/preset-react', { runtime: 'automatic', development: false }]],

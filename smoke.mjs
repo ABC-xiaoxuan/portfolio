@@ -8,7 +8,11 @@ const vc = new VirtualConsole()
 vc.on('jsdomError', (error) => errors.push(`jsdomError: ${error.message}`))
 vc.on('error', (...args) => errors.push(`console.error: ${args.join(' ')}`))
 
-const html = readFileSync('dist/index.html', 'utf8')
+// jsdom cannot run module scripts, so swap in the inlined classic build.
+const entry = '<script type="module" src="./app.js"></script>'
+const source = readFileSync('dist/index.html', 'utf8')
+if (!source.includes(entry)) throw new Error('dist/index.html no longer loads ./app.js as a module')
+const html = source.replace(entry, '<script src="../.smoke/app.js" defer></script>')
 const dom = new JSDOM(html, {
   url: `file://${resolve('dist/index.html').replace(/\\/g, '/')}`,
   runScripts: 'dangerously',
@@ -41,6 +45,9 @@ check('bundle executed without runtime errors', () => errors.length === 0)
 check('React root rendered', () => !!doc.querySelector('#root'))
 check('legacy hero rendered', () => doc.querySelector('h1')?.getAttribute('aria-label')?.includes('大模型'))
 check('all four project cards rendered', () => doc.querySelectorAll('.cards .card').length === 4)
+check('NURBS hero fallback rendered', () => doc.querySelectorAll('.cad-visual .cad-fallback .cad-f-pt').length === 49)
+check('no full-page background canvas', () => !doc.querySelector('.ambient-canvas'))
+check('canonical points at the custom domain', () => doc.querySelector('link[rel="canonical"]')?.href === 'https://www.dongwangxing.online/')
 check('cache demo rows rendered', () => doc.querySelectorAll('.demo .turn').length === 4)
 check('cache controls rendered', () => doc.querySelectorAll('.seg-ctl button').length === 2)
 check('all four experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 4)
