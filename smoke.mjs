@@ -46,7 +46,10 @@ check('React root rendered', () => !!doc.querySelector('#root'))
 check('legacy hero rendered', () => doc.querySelector('h1')?.getAttribute('aria-label')?.includes('大模型'))
 check('all four project cards rendered', () => doc.querySelectorAll('.cards .card').length === 4)
 check('NURBS hero fallback rendered', () => doc.querySelectorAll('.cad-visual .cad-fallback .cad-f-pt').length === 49)
-check('no full-page background canvas', () => !doc.querySelector('.ambient-canvas'))
+check('background canvas is inert and hidden from AT', () => {
+  const canvas = doc.querySelector('.ambient-canvas')
+  return !!canvas && canvas.getAttribute('aria-hidden') === 'true'
+})
 check('canonical points at the custom domain', () => doc.querySelector('link[rel="canonical"]')?.href === 'https://www.dongwangxing.online/')
 check('cache demo rows rendered', () => doc.querySelectorAll('.demo .turn').length === 4)
 check('cache controls rendered', () => doc.querySelectorAll('.seg-ctl button').length === 2)

@@ -311,5 +311,21 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 }
 .cad-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; }
 .cad-dot-hit { background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+/* ---------- full-page 3D backdrop ---------- */
+.ambient-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease);
+}
+.ambient-canvas.is-live { opacity: 1; }
+main,
+.foot { position: relative; z-index: 1; }
+
 .cad-dash { display: inline-block; width: 14px; height: 0; border-top: 1.5px solid var(--accent); }
 .cad-hint { margin-left: auto; }

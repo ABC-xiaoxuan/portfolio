@@ -9,8 +9,8 @@ import terser from '@rollup/plugin-terser'
  * --------------
  * The build is Rollup + Babel only — no esbuild, no child processes.
  * Production output is ES modules with code splitting: the page shell ships
- * in app.js, while three.js (hero NURBS surface) is a dynamic import that loads
- * only when the browser has WebGL.
+ * in app.js, while three.js (hero NURBS surface and page backdrop) is a dynamic
+ * import that loads only when the browser has WebGL.
  * `runtime: 'automatic'` means no `import React` boilerplate in every component.
  */
 export default {
@@ -20,6 +20,8 @@ export default {
     format: 'es',
     entryFileNames: 'app.js',
     chunkFileNames: 'chunks/[name]-[hash].js',
+    // Both WebGL scenes share one three.js chunk; name it after what it is.
+    manualChunks: (id) => (/[\\/]node_modules[\\/]three[\\/]/.test(id) ? 'three' : undefined),
     assetFileNames: '[name][extname]',
     generatedCode: 'es2015',
   },

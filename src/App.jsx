@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import NurbsScene from './components/NurbsScene.jsx'
+import AmbientBackground from './components/AmbientBackground.jsx'
 import useReducedMotion from './hooks/useReducedMotion.js'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -277,6 +278,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
   return <>
+    <AmbientBackground />
     <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><a className="nav-cta" href="#contact">联系我</a></nav></div></header>
     <main id="top"><Hero /><Numbers /><Work /><Experience /><Skills /><Contact /></main>
     <footer className="foot wrap"><span>© 2026 戴玮轩</span><span className="foot-tok">本页 <b>{pageTokens}</b> tokens</span></footer>
