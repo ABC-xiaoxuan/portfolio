@@ -91,6 +91,10 @@ check('experiment scope and cost baseline are explicit', () => {
 })
 check('engineering work is described without obsolete measurements', () => text.includes('prompt_cache_key') && text.includes('15–25k') && !/50–60%|74 次|20%/.test(text))
 check('all four experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 4)
+check('education omits GPA and retains degree', () => {
+  const education = doc.querySelector('.timeline > li:last-child')?.textContent || ''
+  return education.includes('滁州学院') && education.includes('软件工程 · 本科') && !/GPA|绩点|3\.36/i.test(text)
+})
 check('all four skill groups rendered', () => doc.querySelectorAll('.skills .sk').length === 4)
 check('external links are present', () => doc.querySelectorAll('a[href^="http"]').length >= 3)
 check('mailto link is present', () => !!doc.querySelector('a[href^="mailto:"]'))

@@ -258,7 +258,7 @@ function Experience() {
     ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责上下文与缓存优化及可观测性。通过会话级缓存键、工具结果精简与预算调优，同输入四轮评估样本中主 Agent 缓存率 55.51% → 73.0%，重建 4 → 2 次（各配置仅 1 个运行样本，待复测）。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
     ['2024.10 – 2026.01', '江苏久众新视智能科技有限公司', '信息化工程师', 'Python 编写采集脚本，通过 OPC UA / MQTT / Modbus 对接产线设备。设计数据缓冲与重传机制，对接 InfluxDB / PostgreSQL 与 MES / ERP，构建设备监控与生产分析平台。'],
     ['2024.06 – 2024.09', '江苏慕沁智能科技有限公司', '实施运维工程师', '独立交付金融及 IoT 项目实施，负责 Linux 环境部署、服务器配置与运维（Docker / Nginx / Nacos）。'],
-    ['2020.09 – 2024.07', '滁州学院', '软件工程 · 本科 · GPA 3.36 / 4.0', ''],
+    ['2020.09 – 2024.07', '滁州学院', '软件工程 · 本科', ''],
   ]
   return <section id="experience" className="section wrap"><Reveal as="header" className="sec-head"><h2>经历</h2><p className="sec-note">先在产线上学会让数据稳定流动，再到大模型里学会让上下文被复用。</p></Reveal><ol className="timeline">{jobs.map(([when, company, role, desc]) => <Reveal as="li" key={company}><p className="t-when">{when}</p><div><h3>{company}</h3><p className="t-role">{role}</p>{desc && <p className="t-desc">{desc}</p>}</div></Reveal>)}</ol></section>
 }
