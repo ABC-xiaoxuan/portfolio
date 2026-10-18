@@ -53,6 +53,15 @@ check('background canvas is inert and hidden from AT', () => {
 check('canonical points at the custom domain', () => doc.querySelector('link[rel="canonical"]')?.href === 'https://www.dongwangxing.online/')
 check('cache demo rows rendered', () => doc.querySelectorAll('.demo .turn').length === 4)
 check('cache controls rendered', () => doc.querySelectorAll('.seg-ctl button').length === 2)
+check('baseline cache measurements match the source', () => {
+  const values = [...doc.querySelectorAll('.demo-stat .v')].map((node) => node.textContent)
+  return values[0] === '55.51%' && values[1] === '4 次'
+})
+check('experiment scope and cost baseline are explicit', () => {
+  const note = doc.querySelector('.numbers-note')?.textContent || ''
+  return note.includes('各配置仅 1 个运行样本') && note.includes('$1.80 → $1.42') && note.includes('并非相对最初版本降本')
+})
+check('engineering work is described without obsolete measurements', () => text.includes('prompt_cache_key') && text.includes('15–25k') && !/50–60%|74 次|20%/.test(text))
 check('all four experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 4)
 check('all four skill groups rendered', () => doc.querySelectorAll('.skills .sk').length === 4)
 check('external links are present', () => doc.querySelectorAll('a[href^="http"]').length >= 3)
@@ -65,7 +74,11 @@ check('cache mode switch does not throw', () => {
   return true
 })
 await new Promise((resolveRender) => setTimeout(resolveRender, 100))
-check('still healthy after interaction', () => errors.length === 0 && doc.querySelector('.demo .v')?.textContent.includes('50'))
+check('latest measurements render after switching', () => {
+  const values = [...doc.querySelectorAll('.demo-stat .v')].map((node) => node.textContent)
+  return values[0] === '73.0%' && values[1] === '2 次' && doc.querySelector('.demo-note')?.textContent.includes('480k / 24')
+})
+check('still healthy after interaction', () => errors.length === 0 && !!doc.querySelector('.demo'))
 
 console.log(`RUNTIME SMOKE TEST — ${errors.length} problems, ${passed.length} checks passed\n`)
 for (const item of passed) console.log(`  ✓ ${item}`)

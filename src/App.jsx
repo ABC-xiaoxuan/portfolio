@@ -11,8 +11,8 @@ gsap.registerPlugin(ScrollTrigger)
 const TOKENS = [['把'], ['大模型'], ['能力'], ['，'], null, ['落进'], ['真实', 1], ['业务', 1], ['里'], ['。']]
 const SIZES = [16, 22, 28, 34]
 const STATS = {
-  before: { rate: '≈ 20%', rebuild: '74 次', good: false, hit: 0.2, rest: 'miss' },
-  after: { rate: '50–60%', rebuild: '≈ 20 次', good: true, hit: 0.56, rest: 'new' },
+  before: { rate: '55.51%', rebuild: '4 次', good: false, hit: 0.5551, rest: 'miss', note: '同一输入 · 4 轮评估 · 320k / 16' },
+  after: { rate: '73.0%', rebuild: '2 次', good: true, hit: 0.73, rest: 'new', note: '同一输入 · 4 轮评估 · 480k / 24' },
 }
 
 const projects = [
@@ -124,7 +124,7 @@ function Hero() {
       </div>
       <div className="intro">
         <p className="who"><strong>戴玮轩</strong><span>AI 全栈工程师</span></p>
-        <p className="lede">两年全栈经验。参与研发企业级 CAD AI Agent，负责模型缓存优化，把命中率从 20% 提到 50–60%。日常用 Claude Code / Codex 做项目级开发，一个人交付过 Web、App 和后台三端。</p>
+        <p className="lede">两年全栈经验。参与研发企业级 CAD AI Agent，负责上下文与缓存优化：定位前缀失效、精简工具结果、调优上下文预算，同输入四轮评估样本中主 Agent 缓存率达到 73.0%（待复测）。日常用 Claude Code / Codex 做项目级开发，独立交付过 Web、App 和后台三端。</p>
         <div className="actions">
           <a className="btn btn-primary" href="mailto:dongwangxing@foxmail.com">写邮件给我</a>
           <a className="btn" href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
@@ -159,10 +159,11 @@ function CountUp({ to }) {
 
 function Numbers() {
   return <section className="numbers wrap" aria-label="关键数字">
-    <Reveal className="num"><p className="n"><span className="from">20%</span><span className="arr" aria-hidden="true">→</span>50–60%</p><p className="cap">CAD Agent 模型缓存命中率</p></Reveal>
-    <Reveal className="num"><p className="n"><span className="from">74</span><span className="arr" aria-hidden="true">→</span><CountUp to={20} /></p><p className="cap">上下文重建次数</p></Reveal>
-    <Reveal className="num"><p className="n"><CountUp to={12} /><small>个月</small></p><p className="cap">重构后采集链路零故障</p></Reveal>
-    <Reveal className="num"><p className="n"><CountUp to={30} />+</p><p className="cap">开源 Skill 支持的 AI 工具</p></Reveal>
+    <Reveal className="num"><p className="n">73.0%</p><p className="cap">主 Agent 缓存率 · 原为 55.51%</p></Reveal>
+    <Reveal className="num"><p className="n"><span className="from">4</span><span className="arr" aria-hidden="true">→</span><CountUp to={2} /></p><p className="cap">同输入四轮评估 · 重建次数</p></Reveal>
+    <Reveal className="num"><p className="n">≈ <CountUp to={21} />%</p><p className="cap">同代码不同上限 · 单轮费用下降</p></Reveal>
+    <Reveal className="num"><p className="n"><CountUp to={480} /><small>k / 24</small></p><p className="cap">上下文上限 · 字符 / 图片张数</p></Reveal>
+    <p className="numbers-note">2026-10-16 实验：同一输入，每次运行 4 轮评估，各配置仅 1 个运行样本，稳定性待复测。费用对照为同代码的 320k / 16 → 480k / 24（$1.80 → $1.42 / 轮），并非相对最初版本降本。</p>
   </section>
 }
 
@@ -200,7 +201,7 @@ function CacheDemo() {
 
   return <div className="demo" id="demo" ref={demoRef}>
     <div className="demo-head">
-      <span className="demo-title">每轮发给模型的上下文</span>
+      <span className="demo-title">上下文复用 · 机制示意</span>
       <div className="seg-ctl" role="radiogroup" aria-label="切换优化前后">
         {['before', 'after'].map((name) => <button type="button" role="radio" aria-checked={mode === name} data-mode={name} key={name} onClick={() => { touched.current = true; setMode(name) }}>{name === 'before' ? '优化前' : '优化后'}</button>)}
       </div>
@@ -209,9 +210,11 @@ function CacheDemo() {
       {SIZES.map((size, row) => <div className="turn" key={row}><span className="turn-k">T{row + 1}</span><span className="chips">{rows.filter((chip) => chip.row === row).map((chip, index) => <i className={`c ${chip.type}`} style={{ width: `${8 + (row * 13 + index * 7) % 15}px` }} key={index} />)}</span></div>)}
     </div>
     <div className="demo-foot">
-      <div className="demo-stat"><span className="k">缓存命中率</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rate}</span></div>
+      <p className="demo-note">{stat.note} · 上限单位：字符 / 图片张数</p>
+      <div className="demo-stat"><span className="k">主 Agent 缓存率</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rate}</span></div>
       <div className="demo-stat"><span className="k">上下文重建</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rebuild}</span></div>
       <div className="legend"><span><i className="lg lg-hit" />命中缓存</span><span><i className="lg lg-new" />本轮新增</span><span><i className="lg lg-miss" />重新计算</span></div>
+      <p className="demo-note">主 Agent 实测汇总；各配置仅 1 个运行样本，待复测。上方色块仅示意复用机制，不代表逐轮 trace 或精确 token 比例。</p>
     </div>
   </div>
 }
@@ -235,8 +238,14 @@ function Work() {
     <Reveal as="article" className="feature"><div className="feature-text">
       <p className="tag-row"><span className="tag tag-accent">重点</span><span className="tag">2026.07 – 至今</span><span className="tag">团队协作</span></p>
       <h3>Epeius<span>企业级 CAD AI Agent</span></h3>
-      <p className="sum">团队自研的 CAD 专用 Agent，编排框架覆盖 Agent Runtime、Tool Calling、Context 与 Memory。我负责其中的<mark>模型缓存率提升模块</mark>。</p>
-      <Points points={[["稳定请求前缀", '上下文分段复用，身份不变时复用消息前缀，只追加增量。'], ['状态快照增量', '状态 diff（顶层补丁 + 路径更新），切换候选版本时明确替代旧证据。'], ['图片与历史压缩', '同源图片严格去重，压缩旧评估证据，按完整工具组裁剪历史。'], ['缓存可观测性', '对 wire 请求做指纹，区分本地前缀变化与上游行为。']]} />
+      <p className="sum">团队自研的 CAD 专用 Agent，编排框架覆盖 Agent Runtime、Tool Calling、Context 与 Memory。我负责其中的<mark>上下文与模型缓存优化模块</mark>。</p>
+      <Points points={[
+        ['失效定位', '通过请求指纹与重建 trace，定位本地 context_budget 重建导致前缀回退至 7,040 token，排除工具 schema 变化；Agent / Reviewer 分开统计。'],
+        ['前缀稳定', 'session 固定 prompt_cache_key，resume 后复用缓存；切换单工具调用模式不再修改 system prompt。'],
+        ['结果精简', '统一评估结果的追加 / 重建表示，单份约 30k → 7k 字符；精简 prepare 回执与重复快照，每轮减少约 15–25k 字符，保留当前决策依据与加密 reasoning。'],
+        ['预算调优', '调整重建填充比例，上限由 320k 字符 / 16 张图调至 480k / 24；同输入四轮样本中缓存率 55.51% → 73.0%，重建 4 → 2 次。'],
+        ['费用对照', '同代码不同上限对照中，重建 5 → 2 次，单轮 $1.80 → $1.42（约降 21%）。工具调用次数仍会影响费用，各配置仅 1 个运行样本，稳定性待复测。'],
+      ]} />
       <p className="stack">Python · asyncio · HTTPX · OpenAI SDK · LiteLLM · PyVista / VTK · trimesh</p>
     </div><CacheDemo /></Reveal>
     <div className="cards">{projects.map((project) => <Reveal as="article" className="card" key={project.title}><ProjectCard project={project} /></Reveal>)}</div>
@@ -245,7 +254,7 @@ function Work() {
 
 function Experience() {
   const jobs = [
-    ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责模型缓存率提升。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
+    ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责上下文与缓存优化及可观测性。通过会话级缓存键、工具结果精简与预算调优，同输入四轮评估样本中主 Agent 缓存率 55.51% → 73.0%，重建 4 → 2 次（各配置仅 1 个运行样本，待复测）。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
     ['2024.10 – 2026.01', '江苏久众新视智能科技有限公司', '信息化工程师', 'Python 编写采集脚本，通过 OPC UA / MQTT / Modbus 对接产线设备。设计数据缓冲与重传机制，对接 InfluxDB / PostgreSQL 与 MES / ERP，构建设备监控与生产分析平台。'],
     ['2024.06 – 2024.09', '江苏慕沁智能科技有限公司', '实施运维工程师', '独立交付金融及 IoT 项目实施，负责 Linux 环境部署、服务器配置与运维（Docker / Nginx / Nacos）。'],
     ['2020.09 – 2024.07', '滁州学院', '软件工程 · 本科 · GPA 3.36 / 4.0', ''],
