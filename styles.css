@@ -182,6 +182,40 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 .lg-hit { background: var(--accent); } .lg-new { background: var(--ink); }
 .lg-miss { background: repeating-linear-gradient(135deg, var(--line-2) 0 2px, transparent 2px 4px); box-shadow: inset 0 0 0 1px var(--line-2); }
 
+.cache-evidence { grid-column: 1 / -1; min-width: 0; border-top: 1px solid var(--line); }
+.cache-evidence summary { min-height: 56px; padding-block: 16px; cursor: pointer; font-weight: 600; color: var(--ink); transition: color .2s var(--ease); }
+.cache-evidence summary:hover { color: var(--accent-ink); }
+.cache-evidence summary:active { opacity: .8; }
+.cache-evidence summary span { display: inline-block; margin-left: 8px; font-size: var(--fs-xs); font-weight: 400; color: var(--ink-2); }
+.evidence-content { display: grid; gap: 20px; min-width: 0; }
+.evidence-intro, .evidence-next { font-size: var(--fs-sm); line-height: 1.8; color: var(--ink-2); overflow-wrap: anywhere; }
+.evidence-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-sm); }
+.evidence-scroll table { width: 100%; min-width: 660px; border-collapse: collapse; text-align: left; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.evidence-scroll caption { padding: 12px 16px; text-align: left; color: var(--ink-2); font-size: var(--fs-xs); }
+.evidence-scroll th, .evidence-scroll td { padding: 12px 16px; border-top: 1px solid var(--line); white-space: nowrap; }
+.evidence-scroll thead { background: var(--surface-2); }
+.evidence-scroll tbody tr:last-child { background: var(--accent-soft); }
+.evidence-content h4 { margin: 4px 0 0; font-size: var(--fs-md); }
+.evidence-measurements { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; margin: 0; }
+.evidence-measurements > div { min-width: 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); }
+.evidence-measurements dt { font-size: var(--fs-xs); color: var(--ink-2); }
+.evidence-measurements dd { margin: 8px 0 0; font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.evidence-measurements dd strong { color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.evidence-measurements dd p { margin-top: 8px; color: var(--ink-2); }
+.evidence-next { list-style: disc; padding-left: 20px; }
+.evidence-next li + li { margin-top: 8px; }
+.evidence-source { font-size: var(--fs-xs); color: var(--ink-2); }
+@media (max-width: 600px) {
+  .evidence-scroll table { min-width: 0; }
+  .evidence-scroll caption { display: block; }
+  .evidence-scroll thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .evidence-scroll tbody, .evidence-scroll tr { display: block; }
+  .evidence-scroll tbody tr { padding: 12px 16px; border-top: 1px solid var(--line); }
+  .evidence-scroll th[scope="row"] { display: block; padding: 0 0 8px; border: 0; }
+  .evidence-scroll td { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border: 0; }
+  .evidence-scroll td::before { content: attr(data-label); color: var(--ink-2); }
+}
+
 .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 16px; }
 .card { display: flex; flex-direction: column; padding: clamp(22px, 2.5vw, 32px); border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); transition: border-color .3s var(--ease), box-shadow .3s var(--ease), transform .3s var(--ease); }
 .card:hover { border-color: var(--line-2); box-shadow: var(--shadow); transform: translateY(-2px); }

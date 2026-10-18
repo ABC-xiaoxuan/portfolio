@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useGSAP } from '@gsap/react'
 import NurbsScene from './components/NurbsScene.jsx'
 import AmbientBackground from './components/AmbientBackground.jsx'
+import CacheEvidence from './components/CacheEvidence.jsx'
 import useReducedMotion from './hooks/useReducedMotion.js'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -247,7 +248,7 @@ function Work() {
         ['费用对照', '同代码不同上限对照中，重建 5 → 2 次，单轮 $1.80 → $1.42（约降 21%）。工具调用次数仍会影响费用，各配置仅 1 个运行样本，稳定性待复测。'],
       ]} />
       <p className="stack">Python · asyncio · HTTPX · OpenAI SDK · LiteLLM · PyVista / VTK · trimesh</p>
-    </div><CacheDemo /></Reveal>
+    </div><CacheDemo /><CacheEvidence onToggle={() => ScrollTrigger.refresh()} /></Reveal>
     <div className="cards">{projects.map((project) => <Reveal as="article" className="card" key={project.title}><ProjectCard project={project} /></Reveal>)}</div>
   </section>
 }

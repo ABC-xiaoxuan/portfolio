@@ -19,6 +19,8 @@ const dom = new JSDOM(html, {
   resources: 'usable',
   pretendToBeVisual: true,
   beforeParse: (window) => {
+    // ScrollTrigger refresh preserves scroll position; jsdom has no layout/scroll implementation.
+    window.scrollTo = () => {}
     window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} }))
   },
   virtualConsole: vc,
@@ -53,6 +55,32 @@ check('background canvas is inert and hidden from AT', () => {
 check('canonical points at the custom domain', () => doc.querySelector('link[rel="canonical"]')?.href === 'https://www.dongwangxing.online/')
 check('cache demo rows rendered', () => doc.querySelectorAll('.demo .turn').length === 4)
 check('cache controls rendered', () => doc.querySelectorAll('.seg-ctl button').length === 2)
+check('all three original experiment runs render', () => {
+  const rows = [...doc.querySelectorAll('.evidence-scroll tbody tr')].map((row) => [...row.children].map((cell) => cell.textContent))
+  return JSON.stringify(rows) === JSON.stringify([
+    ['优化前 · 10:22', '320k / 16', '4', '55.51%', '$1.20'],
+    ['中间版本 · 17:33', '320k / 16', '5', '72.4%', '$1.80'],
+    ['最新 · 20:25', '480k / 24', '2', '73.0%', '$1.42'],
+  ])
+})
+check('all source measurements are visible with units', () => {
+  const evidence = doc.querySelector('.cache-evidence')
+  return evidence?.open && evidence.querySelectorAll('dl > div').length === 14 && [
+    '40,000–50,000 → 7,040 token', '$0.33–0.50', '135k–155k', '0.5 → 0.35', '30k → 7k',
+    '9.9k–20.7k → 0.6k–1.7k', '22k → 17k', '46k', '15k–25k', '57k–68k', '$0.30', '12–24', '170k → 230k', '110k',
+  ].every((value) => evidence.textContent.includes(value))
+})
+check('future targets are separated from measured results', () => {
+  const heading = doc.querySelector('.evidence-next')?.previousElementSibling
+  return heading?.textContent.includes('未实施') && doc.querySelector('.evidence-next')?.textContent.includes('0.2')
+})
+check('evidence disclosure can be collapsed and reopened', () => {
+  const evidence = doc.querySelector('.cache-evidence')
+  evidence.querySelector('summary').click()
+  const closed = !evidence.open
+  evidence.querySelector('summary').click()
+  return closed && evidence.open
+})
 check('baseline cache measurements match the source', () => {
   const values = [...doc.querySelectorAll('.demo-stat .v')].map((node) => node.textContent)
   return values[0] === '55.51%' && values[1] === '4 次'
