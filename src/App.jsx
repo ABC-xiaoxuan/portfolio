@@ -210,7 +210,7 @@ function CacheDemo() {
       {SIZES.map((size, row) => <div className="turn" key={row}><span className="turn-k">T{row + 1}</span><span className="chips">{rows.filter((chip) => chip.row === row).map((chip, index) => <i className={`c ${chip.type}`} style={{ width: `${8 + (row * 13 + index * 7) % 15}px` }} key={index} />)}</span></div>)}
     </div>
     <div className="demo-foot">
-      <p className="demo-note">{stat.note} · 上限单位：字符 / 图片张数</p>
+      <p className="demo-note">{stat.note} · <span className="nw">上限单位：字符 / 图片张数</span></p>
       <div className="demo-stat"><span className="k">主 Agent 缓存率</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rate}</span></div>
       <div className="demo-stat"><span className="k">上下文重建</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rebuild}</span></div>
       <div className="legend"><span><i className="lg lg-hit" />命中缓存</span><span><i className="lg lg-new" />本轮新增</span><span><i className="lg lg-miss" />重新计算</span></div>
