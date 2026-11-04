@@ -117,7 +117,7 @@ html { color-scheme: light; }
 .who { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
 .who strong { font: 700 var(--fs-xl)/1.3 var(--cjk); }
 .who span { font-size: var(--fs-sm); color: var(--ink-3); }
-.lede { margin-top: 12px; max-width: 40em; font-size: var(--fs-lg); line-height: 1.8; color: var(--ink-2); }
+.lede { margin-top: 12px; max-width: 40em; font-size: var(--fs-lg); line-height: 1.8; color: var(--ink-2); text-wrap: pretty; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
 .btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 18px; border: 1px solid var(--line-2); border-radius: 999px; background: var(--surface); font-size: var(--fs-sm); font-weight: 500; transition: border-color .2s var(--ease), background-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease); }
 .btn:hover { border-color: var(--ink); }
@@ -199,7 +199,8 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 .card .pts { margin-bottom: 18px; }
 /* ---------- 经历 ---------- */
 .timeline { border-top: 1px solid var(--line); }
-.timeline li { display: grid; grid-template-columns: 2fr 10fr; gap: 8px clamp(24px, 4vw, 56px); padding: 28px 0; border-bottom: 1px solid var(--line); }
+.timeline li { display: grid; grid-template-columns: 10.5rem 1fr; gap: 8px clamp(24px, 4vw, 56px); padding: 28px 0; border-bottom: 1px solid var(--line); }
+.t-when { white-space: nowrap; }
 .t-when { font: 500 var(--fs-sm)/1.9 var(--mono); color: var(--ink-3); font-variant-numeric: tabular-nums; }
 .timeline h3 { font-size: var(--fs-lg); }
 .t-role { margin-top: 2px; font-size: var(--fs-sm); color: var(--ink-2); font-weight: 500; }
@@ -246,10 +247,11 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
   .feature { grid-template-columns: 1fr; }
   .demo { position: static; }
   .numbers { grid-template-columns: repeat(2, 1fr); }
-  .hero-meta { grid-template-columns: 1fr 1fr; }
+  .hero-meta { grid-template-columns: minmax(180px, 1fr) 2fr; }
   .cad-visual { grid-column: 1 / -1; grid-row: 1; min-height: 300px; }
   .meter { grid-column: 1; grid-row: 2; }
   .intro { grid-column: 2; grid-row: 2; }
+  .card .pts li { grid-template-columns: 1fr; gap: 2px; }
 }
 @media (max-width: 760px) {
   .hero-meta { grid-template-columns: 1fr; }
