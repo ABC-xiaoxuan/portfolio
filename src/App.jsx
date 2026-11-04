@@ -232,9 +232,13 @@ function ProjectCard({ project }) {
   </>
 }
 
+function SecHead({ idx, name, title, note }) {
+  return <Reveal as="header" className="sec-head"><h2><span className="sec-idx" aria-hidden="true"><b>{idx}</b> / {name}</span>{title}</h2><p className="sec-note">{note}</p></Reveal>
+}
+
 function Work() {
   return <section id="work" className="section wrap">
-    <Reveal as="header" className="sec-head"><h2>项目</h2><p className="sec-note">按时间倒序。每一项都写清了哪部分是我做的。</p></Reveal>
+    <SecHead idx="01" name="work" title="项目" note="按时间倒序。每一项都写清了哪部分是我做的。" />
     <Reveal as="article" className="feature"><div className="feature-text">
       <p className="tag-row"><span className="tag tag-accent">重点</span><span className="tag">2026.07 – 至今</span><span className="tag">团队协作</span></p>
       <h3>Epeius<span>企业级 CAD AI Agent</span></h3>
@@ -257,13 +261,12 @@ function Experience() {
     ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责上下文与缓存优化及可观测性（会话级缓存键、工具结果精简、预算调优）。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
     ['2024.10 – 2026.01', '江苏久众新视智能科技有限公司', '信息化工程师', 'Python 编写采集脚本，通过 OPC UA / MQTT / Modbus 对接产线设备。设计数据缓冲与重传机制，对接 InfluxDB / PostgreSQL 与 MES / ERP，构建设备监控与生产分析平台。'],
     ['2024.06 – 2024.09', '江苏慕沁智能科技有限公司', '实施运维工程师', '独立交付金融及 IoT 项目实施，负责 Linux 环境部署、服务器配置与运维（Docker / Nginx / Nacos）。'],
-    ['2020.09 – 2024.07', '滁州学院', '软件工程 · 本科', ''],
   ]
-  return <section id="experience" className="section wrap"><Reveal as="header" className="sec-head"><h2>经历</h2><p className="sec-note">先在产线上学会让数据稳定流动，再到大模型里学会让上下文被复用。</p></Reveal><ol className="timeline">{jobs.map(([when, company, role, desc]) => <Reveal as="li" key={company}><p className="t-when">{when}</p><div><h3>{company}</h3><p className="t-role">{role}</p>{desc && <p className="t-desc">{desc}</p>}</div></Reveal>)}</ol></section>
+  return <section id="experience" className="section wrap"><SecHead idx="02" name="experience" title="经历" note="先在产线上让数据稳定流动，再让大模型的上下文被复用。" /><ol className="timeline">{jobs.map(([when, company, role, desc]) => <Reveal as="li" key={company}><p className="t-when">{when}</p><div><h3>{company}</h3><p className="t-role">{role}</p><p className="t-desc">{desc}</p></div></Reveal>)}</ol><Reveal as="p" className="edu"><span className="t-when">2020.09 – 2024.07</span><span><b>滁州学院</b> · 软件工程 · 本科</span></Reveal></section>
 }
 
 function Skills() {
-  return <section id="skills" className="section wrap"><Reveal as="header" className="sec-head"><h2>技能</h2><p className="sec-note">只列能在面试里讲清楚的。</p></Reveal><div className="skills">{skills.map(([name, items], index) => <Reveal className={`sk${index === 0 ? ' sk-ai' : ''}`} key={name}><h3>{name}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></Reveal>)}</div></section>
+  return <section id="skills" className="section wrap"><SecHead idx="03" name="skills" title="技能" note="只列能在面试里讲清楚的。" /><div className="skills">{skills.map(([name, items], index) => <Reveal className={`sk${index === 0 ? ' sk-ai' : ''}`} key={name}><h3>{name}</h3><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul></Reveal>)}</div></section>
 }
 
 function Contact() {
@@ -274,10 +277,13 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false)
   const [pastHero, setPastHero] = useState(false)
   const [pageTokens, setPageTokens] = useState('—')
+  const barRef = useRef(null)
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 8)
       setPastHero(window.scrollY > window.innerHeight * 0.6)
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      if (barRef.current) barRef.current.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
@@ -292,7 +298,7 @@ export default function App() {
   }, [])
   return <>
     <AmbientBackground dim={!pastHero} />
-    <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><a className="nav-cta" href="#contact">联系我</a></nav></div></header>
+    <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><a className="nav-cta" href="#contact">联系我</a></nav></div><span className="read-bar" ref={barRef} aria-hidden="true" /></header>
     <main id="top"><Hero /><Numbers /><Work /><Experience /><Skills /><Contact /></main>
     <footer className="foot wrap"><span>© 2026 戴玮轩</span><span className="foot-tok">本页 <b>{pageTokens}</b> tokens</span></footer>
   </>

@@ -65,9 +65,9 @@ check('experiment scope and cost baseline are explicit', () => {
   return note.includes('各配置仅 1 个运行样本') && note.includes('$1.80 → $1.42') && note.includes('并非相对最初版本降本')
 })
 check('engineering work is described without obsolete measurements', () => text.includes('prompt_cache_key') && text.includes('15–25k') && !/50–60%|74 次|20%/.test(text))
-check('all four experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 4)
+check('all three experience rows rendered', () => doc.querySelectorAll('.timeline > li').length === 3)
 check('education omits GPA and retains degree', () => {
-  const education = doc.querySelector('.timeline > li:last-child')?.textContent || ''
+  const education = doc.querySelector('.edu')?.textContent || ''
   return education.includes('滁州学院') && education.includes('软件工程 · 本科') && !/GPA|绩点|3\.36/i.test(text)
 })
 check('all four skill groups rendered', () => doc.querySelectorAll('.skills .sk').length === 4)
