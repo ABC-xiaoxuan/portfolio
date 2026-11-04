@@ -86,6 +86,13 @@ check('latest measurements render after switching', () => {
   return values[0] === '73.0%' && values[1] === '2 次' && doc.querySelector('.demo-note')?.textContent.includes('480k / 24')
 })
 check('still healthy after interaction', () => errors.length === 0 && !!doc.querySelector('.demo'))
+check('theme toggle switches the scheme', () => {
+  const button = doc.querySelector('.theme-toggle')
+  const before = doc.documentElement.dataset.theme
+  button?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }))
+  const after = doc.documentElement.dataset.theme
+  return !!button && !!after && after !== before
+})
 
 console.log(`RUNTIME SMOKE TEST — ${errors.length} problems, ${passed.length} checks passed\n`)
 for (const item of passed) console.log(`  ✓ ${item}`)

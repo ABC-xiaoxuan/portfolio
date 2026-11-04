@@ -16,9 +16,13 @@ export function readThemeColors() {
 }
 
 export function onThemeChange(callback) {
-  const media = window.matchMedia?.('(prefers-color-scheme: dark)')
-  if (!media?.addEventListener) return () => {}
   const handler = () => callback(readThemeColors())
-  media.addEventListener('change', handler)
-  return () => media.removeEventListener('change', handler)
+  const media = window.matchMedia?.('(prefers-color-scheme: dark)')
+  media?.addEventListener?.('change', handler)
+  const observer = window.MutationObserver ? new MutationObserver(handler) : null
+  observer?.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  return () => {
+    media?.removeEventListener?.('change', handler)
+    observer?.disconnect()
+  }
 }

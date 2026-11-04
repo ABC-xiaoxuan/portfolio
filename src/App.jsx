@@ -273,6 +273,24 @@ function Contact() {
   return <section id="contact" className="contact wrap"><Reveal className="contact-card"><p className="status"><span className="pulse" aria-hidden="true" />正在找 AI 全栈 / 全栈开发岗位</p><h2>聊聊怎么把模型<br />用进你的业务。</h2><a className="contact-mail" href="mailto:dongwangxing@foxmail.com">dongwangxing@foxmail.com <span aria-hidden="true">→</span></a><ul className="contact-list"><li><span>GitHub</span><a href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">ABC-xiaoxuan ↗</a></li><li><span>作品</span><a href="https://www.getnurbs.com" target="_blank" rel="noopener">getnurbs.com ↗</a></li><li><span>所在</span><span>深圳 · 可接受异地</span></li></ul></Reveal></section>
 }
 
+function ThemeToggle() {
+  const [dark, setDark] = useState(() => {
+    const set = document.documentElement.dataset.theme
+    return set ? set === 'dark' : !!window.matchMedia?.('(prefers-color-scheme: dark)').matches
+  })
+  const toggle = () => {
+    const next = dark ? 'light' : 'dark'
+    document.documentElement.dataset.theme = next
+    try { localStorage.setItem('theme', next) } catch { /* private mode: choice lasts for this page only */ }
+    setDark(!dark)
+  }
+  return <button type="button" className="theme-toggle" onClick={toggle} aria-pressed={dark} aria-label={dark ? '切换到浅色模式' : '切换到深色模式'}>
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">{dark
+      ? <><circle cx="12" cy="12" r="4.5" fill="currentColor" /><g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></g></>
+      : <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="currentColor" />}</svg>
+  </button>
+}
+
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
   const [pastHero, setPastHero] = useState(false)
@@ -298,7 +316,7 @@ export default function App() {
   }, [])
   return <>
     <AmbientBackground dim={!pastHero} />
-    <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><a className="nav-cta" href="#contact">联系我</a></nav></div><span className="read-bar" ref={barRef} aria-hidden="true" /></header>
+    <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><ThemeToggle /><a className="nav-cta" href="#contact">联系我</a></nav></div><span className="read-bar" ref={barRef} aria-hidden="true" /></header>
     <main id="top"><Hero /><Numbers /><Work /><Experience /><Skills /><Contact /></main>
     <footer className="foot wrap"><span>© 2026 戴玮轩</span><span className="foot-tok">本页 <b>{pageTokens}</b> tokens</span></footer>
   </>
