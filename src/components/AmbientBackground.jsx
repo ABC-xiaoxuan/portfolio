@@ -3,7 +3,7 @@ import useReducedMotion from '../hooks/useReducedMotion.js'
 
 // Full-page backdrop: a NURBS-style wireframe terrain with streaming tokens.
 // three.js is fetched once the browser is idle, so it never delays first paint.
-export default function AmbientBackground() {
+export default function AmbientBackground({ dim = false }) {
   const canvasRef = useRef(null)
   const reduce = useReducedMotion()
   const [live, setLive] = useState(false)
@@ -34,5 +34,5 @@ export default function AmbientBackground() {
     }
   }, [reduce])
 
-  return <canvas ref={canvasRef} className={`ambient-canvas${live ? ' is-live' : ''}`} aria-hidden="true" />
+  return <canvas ref={canvasRef} className={`ambient-canvas${live ? ' is-live' : ''}${dim ? ' is-dim' : ''}`} aria-hidden="true" />
 }

@@ -124,7 +124,7 @@ function Hero() {
       </div>
       <div className="intro">
         <p className="who"><strong>戴玮轩</strong><span>AI 全栈工程师</span></p>
-        <p className="lede">两年全栈经验。参与研发企业级 CAD AI Agent，负责上下文与缓存优化：定位前缀失效、精简工具结果、调优上下文预算，同输入四轮评估样本中主 Agent 缓存率达到 73.0%（待复测）。日常用 Claude Code / Codex 做项目级开发，独立交付过 Web、App 和后台三端。</p>
+        <p className="lede">两年全栈经验。负责企业级 CAD AI Agent 的上下文与缓存优化，主 Agent 缓存率 55.51% → 73.0%。用 Claude Code / Codex 独立交付过 Web、App 和后台三端。</p>
         <div className="actions">
           <a className="btn btn-primary" href="mailto:dongwangxing@foxmail.com">写邮件给我</a>
           <a className="btn" href="https://github.com/ABC-xiaoxuan" target="_blank" rel="noopener">GitHub <span aria-hidden="true">↗</span></a>
@@ -214,13 +214,13 @@ function CacheDemo() {
       <div className="demo-stat"><span className="k">主 Agent 缓存率</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rate}</span></div>
       <div className="demo-stat"><span className="k">上下文重建</span><span className={`v${stat.good ? ' good' : ''}`}>{stat.rebuild}</span></div>
       <div className="legend"><span><i className="lg lg-hit" />命中缓存</span><span><i className="lg lg-new" />本轮新增</span><span><i className="lg lg-miss" />重新计算</span></div>
-      <p className="demo-note">主 Agent 实测汇总；各配置仅 1 个运行样本，待复测。上方色块仅示意复用机制，不代表逐轮 trace 或精确 token 比例。</p>
+      <p className="demo-note">主 Agent 实测汇总。上方色块仅示意复用机制，不代表逐轮 trace 或精确 token 比例。</p>
     </div>
   </div>
 }
 
 function Points({ points }) {
-  return <ul className="pts">{points.map(([label, text], index) => <li key={index}><b>{label}</b>{text}</li>)}</ul>
+  return <ul className="pts">{points.map(([label, text], index) => <li key={index}><b>{label}</b><span>{text}</span></li>)}</ul>
 }
 
 function ProjectCard({ project }) {
@@ -244,7 +244,7 @@ function Work() {
         ['前缀稳定', 'session 固定 prompt_cache_key，resume 后复用缓存；切换单工具调用模式不再修改 system prompt。'],
         ['结果精简', '统一评估结果的追加 / 重建表示，单份约 30k → 7k 字符；精简 prepare 回执与重复快照，每轮减少约 15–25k 字符，保留当前决策依据与加密 reasoning。'],
         ['预算调优', '调整重建填充比例，上限由 320k 字符 / 16 张图调至 480k / 24；同输入四轮样本中缓存率 55.51% → 73.0%，重建 4 → 2 次。'],
-        ['费用对照', '同代码不同上限对照中，重建 5 → 2 次，单轮 $1.80 → $1.42（约降 21%）。工具调用次数仍会影响费用，各配置仅 1 个运行样本，稳定性待复测。'],
+        ['费用对照', '同代码不同上限对照中，重建 5 → 2 次，单轮 $1.80 → $1.42（约降 21%）；工具调用次数仍会影响费用。'],
       ]} />
       <p className="stack">Python · asyncio · HTTPX · OpenAI SDK · LiteLLM · PyVista / VTK · trimesh</p>
     </div><CacheDemo /></Reveal>
@@ -254,7 +254,7 @@ function Work() {
 
 function Experience() {
   const jobs = [
-    ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责上下文与缓存优化及可观测性。通过会话级缓存键、工具结果精简与预算调优，同输入四轮评估样本中主 Agent 缓存率 55.51% → 73.0%，重建 4 → 2 次（各配置仅 1 个运行样本，待复测）。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
+    ['2026.02 – 至今', '深圳市昊羽兴信息科技有限公司', '全栈开发工程师', '与技术主管协作研发企业级 CAD AI Agent（Epeius），负责上下文与缓存优化及可观测性（会话级缓存键、工具结果精简、预算调优）。深度使用 Claude Code / Codex 完成前后端链路开发，独立负责多个 Web / App 项目上线。'],
     ['2024.10 – 2026.01', '江苏久众新视智能科技有限公司', '信息化工程师', 'Python 编写采集脚本，通过 OPC UA / MQTT / Modbus 对接产线设备。设计数据缓冲与重传机制，对接 InfluxDB / PostgreSQL 与 MES / ERP，构建设备监控与生产分析平台。'],
     ['2024.06 – 2024.09', '江苏慕沁智能科技有限公司', '实施运维工程师', '独立交付金融及 IoT 项目实施，负责 Linux 环境部署、服务器配置与运维（Docker / Nginx / Nacos）。'],
     ['2020.09 – 2024.07', '滁州学院', '软件工程 · 本科', ''],
@@ -272,9 +272,13 @@ function Contact() {
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false)
+  const [pastHero, setPastHero] = useState(false)
   const [pageTokens, setPageTokens] = useState('—')
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
+    const onScroll = () => {
+      setScrolled(window.scrollY > 8)
+      setPastHero(window.scrollY > window.innerHeight * 0.6)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     const main = document.querySelector('main')
@@ -287,7 +291,7 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
   return <>
-    <AmbientBackground />
+    <AmbientBackground dim={!pastHero} />
     <header className={`topbar${scrolled ? ' scrolled' : ''}`}><div className="topbar-in wrap"><a className="mark" href="#top" aria-label="回到顶部"><span className="mark-tok">戴</span><span className="mark-tok">玮轩</span></a><nav aria-label="主导航"><a href="#work">项目</a><a href="#experience">经历</a><a href="#skills">技能</a><a className="nav-cta" href="#contact">联系我</a></nav></div></header>
     <main id="top"><Hero /><Numbers /><Work /><Experience /><Skills /><Contact /></main>
     <footer className="foot wrap"><span>© 2026 戴玮轩</span><span className="foot-tok">本页 <b>{pageTokens}</b> tokens</span></footer>

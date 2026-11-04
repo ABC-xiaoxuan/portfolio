@@ -156,7 +156,7 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 .feature h3 > span { font-family: var(--cjk); }
 .sum { margin-top: 14px; color: var(--ink-2); }
 
-.demo { align-self: start; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); overflow: hidden; }
+.demo { align-self: start; position: sticky; top: 88px; display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-2); overflow: hidden; }
 .demo-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--line); }
 .demo-title { font: 500 var(--fs-xs)/1.4 var(--mono); color: var(--ink-2); }
 .seg-ctl { display: inline-flex; flex-shrink: 0; white-space: nowrap; padding: 3px; border-radius: 999px; background: var(--tok); }
@@ -266,6 +266,7 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
 /* ---------- 响应式 ---------- */
 @media (max-width: 1024px) {
   .feature { grid-template-columns: 1fr; }
+  .demo { position: static; }
   .numbers { grid-template-columns: repeat(2, 1fr); }
   .hero-meta { grid-template-columns: 1fr 1fr; }
   .cad-visual { grid-column: 1 / -1; grid-row: 1; min-height: 300px; }
@@ -360,6 +361,7 @@ mark { background: var(--accent-soft); color: var(--ink); font-weight: 600; padd
   transition: opacity 1.2s var(--ease);
 }
 .ambient-canvas.is-live { opacity: 1; }
+.ambient-canvas.is-live.is-dim { opacity: .28; }
 main,
 .foot { position: relative; z-index: 1; }
 
